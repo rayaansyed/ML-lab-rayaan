@@ -1,0 +1,68 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+
+# Load the dataset from the uploaded CSV file
+dataset = pd.read_csv('insurance.csv')
+
+# Display the first 5 rows and a statistical summary
+print("Dataset Head:")
+print(dataset.head())
+print("\nDataset Description:")
+print(dataset.describe())
+
+# Plotting the data to see the relationship between age and charges
+plt.figure(figsize=(8, 6))
+plt.scatter(dataset['age'], dataset['charges'], color='green', alpha=0.5)
+plt.title('Medical Charges vs. Age')
+plt.xlabel('Age')
+plt.ylabel('Medical Charges ($)')
+plt.grid(True)
+plt.show()
+
+# Separate features (X) and target (y)
+X = dataset[['age']]
+y = dataset['charges']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create and train the Linear Regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+print(f"\nModel training complete!")
+print(f"Intercept (b): {model.intercept_:.2f}")
+print(f"Coefficient (m): {model.coef_[0]:.2f}")
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Create a DataFrame to compare actual vs. predicted values
+predictions_df = pd.DataFrame({'Actual Charges': y_test, 'Predicted Charges': y_pred})
+print("\nSample Predictions:")
+print(predictions_df.head())
+
+# Plot the regression line on the test data
+plt.figure(figsize=(8, 6))
+plt.scatter(X_test, y_test, color='green', label='Actual Data', alpha=0.6)
+plt.plot(X_test, y_pred, color='red', linewidth=2, label='Regression Line')
+plt.title('Medical Charges Prediction: Actual vs. Predicted')
+plt.xlabel('Age')
+plt.ylabel('Medical Charges ($)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Evaluate the model's performance
+mae = metrics.mean_absolute_error(y_test, y_pred)
+mse = metrics.mean_squared_error(y_test, y_pred)
+r2 = metrics.r2_score(y_test, y_pred)
+
+print("\nModel Evaluation Metrics:")
+print(f"Mean Absolute Error (MAE): {mae:.2f}")
+print(f"Mean Squared Error (MSE): {mse:.2f}")
+print(f"R-squared (R²): {r2:.2f}")
